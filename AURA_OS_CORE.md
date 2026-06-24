@@ -46,3 +46,16 @@
 - Sincronización Realtime activa y funcional.
 - Flujo de Onboarding con opción de descartarse.
 - OAuth centralizado en Google.
+
+## 5. Fase 2: Motor IA (AI Brain) y Pacing
+La Fase 2 integra un Cerebro IA para la categorización y proyección de gastos orientada a inversiones.
+
+### 5.1 Arquitectura del Motor IA
+- **Layer 1: Extracción y Enriquecimiento:** Modificación de `transactions` para añadir geolocalización, parent transaction y `category_id`.
+- **Layer 2: Neteo y Reglas:** Implementación del campo `net_amount` para resolver gastos divididos (netting). Además de una tabla `user_ai_memory` para almacenar las preferencias de categorización dictadas por el usuario.
+- **Layer 3: Pacing hacia Inversión:** Cálculo en tiempo real de la proyección de gasto a fin de mes (`src/lib/pacing.ts`) y contraste contra `investment_goals` para asegurar que el superávit destinado a inversiones se alcance (Target Investment Surplus).
+
+### 5.2 Estructura de Datos (Tablas nuevas)
+- `investment_goals`: Límites mensuales y objetivos de inversión.
+- `user_ai_memory`: Base de conocimiento personalizada (palabras clave a categorías forzadas).
+- `transactions` (evolución): Soporta `net_amount` y `parent_transaction_id` para transacciones compuestas.

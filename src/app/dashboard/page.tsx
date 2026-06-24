@@ -7,13 +7,7 @@ interface Profile {
   webhook_token: string
 }
 
-interface Transaction {
-  id: string
-  amount: number
-  currency: string
-  raw_text: string | null
-  created_at: string
-}
+import { Transaction } from '@/types'
 
 export default async function DashboardPage() {
   const supabase = await createClient()

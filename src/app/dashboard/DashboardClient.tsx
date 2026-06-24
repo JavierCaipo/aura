@@ -3,13 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-interface Transaction {
-  id: string
-  amount: number
-  currency: string
-  raw_text: string | null
-  created_at: string
-}
+import { Transaction } from '@/types'
 
 interface Props {
   userId: string
