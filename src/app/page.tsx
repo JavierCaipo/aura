@@ -83,23 +83,27 @@ function FluidBackground() {
         <motion.path
           d="M0,160 C360,80 720,240 1080,160 C1260,120 1350,180 1440,160 L1440,320 L0,320 Z"
           fill="rgba(124,92,252,0.04)"
-          animate={{ d: [
-            "M0,160 C360,80 720,240 1080,160 C1260,120 1350,180 1440,160 L1440,320 L0,320 Z",
-            "M0,180 C300,120 600,200 900,140 C1100,100 1320,200 1440,170 L1440,320 L0,320 Z",
-            "M0,140 C420,200 700,80 1000,180 C1200,230 1380,100 1440,140 L1440,320 L0,320 Z",
-            "M0,160 C360,80 720,240 1080,160 C1260,120 1350,180 1440,160 L1440,320 L0,320 Z",
-          ]}}
+          animate={{
+            d: [
+              "M0,160 C360,80 720,240 1080,160 C1260,120 1350,180 1440,160 L1440,320 L0,320 Z",
+              "M0,180 C300,120 600,200 900,140 C1100,100 1320,200 1440,170 L1440,320 L0,320 Z",
+              "M0,140 C420,200 700,80 1000,180 C1200,230 1380,100 1440,140 L1440,320 L0,320 Z",
+              "M0,160 C360,80 720,240 1080,160 C1260,120 1350,180 1440,160 L1440,320 L0,320 Z",
+            ]
+          }}
           transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.path
           d="M0,200 C480,140 960,260 1440,200 L1440,320 L0,320 Z"
           fill="rgba(94,234,212,0.025)"
-          animate={{ d: [
-            "M0,200 C480,140 960,260 1440,200 L1440,320 L0,320 Z",
-            "M0,220 C360,180 720,260 1080,180 C1260,140 1380,220 1440,210 L1440,320 L0,320 Z",
-            "M0,180 C500,250 900,130 1440,190 L1440,320 L0,320 Z",
-            "M0,200 C480,140 960,260 1440,200 L1440,320 L0,320 Z",
-          ]}}
+          animate={{
+            d: [
+              "M0,200 C480,140 960,260 1440,200 L1440,320 L0,320 Z",
+              "M0,220 C360,180 720,260 1080,180 C1260,140 1380,220 1440,210 L1440,320 L0,320 Z",
+              "M0,180 C500,250 900,130 1440,190 L1440,320 L0,320 Z",
+              "M0,200 C480,140 960,260 1440,200 L1440,320 L0,320 Z",
+            ]
+          }}
           transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut', delay: 5 }}
         />
       </svg>
@@ -416,13 +420,13 @@ function Nav() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3">
-        <Image 
-          src="/logo.png" 
-          alt="Aura OS Logo" 
-          width={52} 
-          height={52} 
-          className="rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.5)]" 
-          priority 
+        <Image
+          src="/logo.png"
+          alt="Aura OS Logo"
+          width={52}
+          height={52}
+          className="rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.5)]"
+          priority
         />
         <span className="text-xl font-bold tracking-tight text-white">
           Aura OS
@@ -781,11 +785,11 @@ export default function LandingPage() {
             alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
           }}>
             <div className="flex items-center gap-2">
-              <Image 
-                src="/logo.png" 
-                alt="Aura OS Logo" 
-                width={24} 
-                height={24} 
+              <Image
+                src="/logo.png"
+                alt="Aura OS Logo"
+                width={24}
+                height={24}
                 className="rounded-md shadow-[0_0_10px_rgba(168,85,247,0.3)]"
               />
               <span className="font-display" style={{ fontWeight: 700, fontSize: '0.875rem', color: 'rgba(255,255,255,0.4)' }}>
@@ -825,9 +829,9 @@ export default function LandingPage() {
 
             <p className="w-full text-center text-zinc-500 text-sm mt-8">
               Hecho con precisión por{' '}
-              <a 
-                href="https://tresapps.com" 
-                target="_blank" 
+              <a
+                href="https://tresapps.app"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-zinc-400 hover:text-purple-400 transition-colors font-medium"
               >

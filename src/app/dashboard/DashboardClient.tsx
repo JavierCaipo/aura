@@ -58,10 +58,31 @@ export default function DashboardClient({
   const [total, setTotal] = useState(initialTotal)
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
   const [copied, setCopied] = useState(false)
+  const [copiedProd, setCopiedProd] = useState(false)
   const [realtimeStatus, setRealtimeStatus] = useState<'connected' | 'connecting' | 'disconnected'>('connecting')
   const [toast, setToast] = useState<string | null>(null)
   const webhookInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+
+  const token = webhookUrl.split('token=')[1] || ''
+  const prodWebhookUrl = `https://aura.tresapps.app/api/webhook/yape?token=${token}`
+
+  async function handleCopyProdWebhook() {
+    try {
+      await navigator.clipboard.writeText(prodWebhookUrl)
+      setCopiedProd(true)
+      setTimeout(() => setCopiedProd(false), 2500)
+    } catch {
+      if (webhookInputRef.current) {
+        webhookInputRef.current.value = prodWebhookUrl
+        webhookInputRef.current.select()
+        document.execCommand('copy')
+        webhookInputRef.current.value = webhookUrl // restore
+        setCopiedProd(true)
+        setTimeout(() => setCopiedProd(false), 2500)
+      }
+    }
+  }
 
   // ── Supabase Realtime subscription ──────────────────
   useEffect(() => {
@@ -243,6 +264,104 @@ export default function DashboardClient({
         </div>
 
         {/* ══════════════════════════════════════════════════ */}
+        {/* SECCIÓN DE INSTALACIÓN */}
+        {/* ══════════════════════════════════════════════════ */}
+        <div 
+          className="card" 
+          style={{ 
+            padding: '1.5rem', 
+            marginBottom: '1.25rem',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(124,92,252,0.04) 100%)',
+            border: '1px solid rgba(255,255,255,0.05)',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Subtle background glow */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute', bottom: '-50%', left: '-10%',
+              width: '15rem', height: '15rem',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: '1.25rem' }}>⚙️</span>
+            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
+              Instalación de Aura OS
+            </h2>
+          </div>
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
+            Descarga el atajo oficial en tu iPhone y copia la dirección del webhook para integrarlo.
+          </p>
+
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <a
+              href="https://www.icloud.com/shortcuts/69683d26351c4b65a6f087a80729d804"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+              style={{
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.625rem 1.25rem',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                background: 'linear-gradient(135deg, var(--color-brand) 0%, #5b4bd4 100%)',
+                border: 'none',
+                borderRadius: '0.5rem',
+                boxShadow: '0 4px 12px rgba(124,92,252,0.25)',
+                transition: 'all 200ms',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(124,92,252,0.4)'
+                e.currentTarget.style.transform = 'translateY(-1px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,92,252,0.25)'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              📲 Instalar en iOS
+            </a>
+
+            <button
+              onClick={handleCopyProdWebhook}
+              className="btn btn-copy"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.625rem 1.25rem',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '0.5rem',
+                transition: 'all 200ms',
+                cursor: 'pointer',
+                color: 'var(--color-text)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+              }}
+            >
+              {copiedProd ? '✓ ¡Copiado!' : '📋 Copiar Webhook'}
+            </button>
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════ */}
         {/* AC-02 · Webhook URL Card */}
         {/* ══════════════════════════════════════════════════ */}
         <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
@@ -301,7 +420,7 @@ export default function DashboardClient({
               action={
                 <a
                   id="shortcut-download-link"
-                  href="https://www.icloud.com/shortcuts/tu-shortcut-id"
+                  href="https://www.icloud.com/shortcuts/69683d26351c4b65a6f087a80729d804"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-primary"
