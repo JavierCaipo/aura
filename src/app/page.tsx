@@ -419,10 +419,10 @@ function Nav() {
         <Image 
           src="/logo.png" 
           alt="Aura OS Logo" 
-          width={36} 
-          height={36} 
-          className="rounded-lg shadow-[0_0_15px_rgba(168,85,247,0.4)]"
-          priority
+          width={52} 
+          height={52} 
+          className="rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.5)]" 
+          priority 
         />
         <span className="text-xl font-bold tracking-tight text-white">
           Aura OS
@@ -714,14 +714,14 @@ export default function LandingPage() {
                 accent="rgba(124,92,252,0.25)"
                 icon={<ShortcutSVG />}
                 title="Magia invisible"
-                body="El Shortcut de iOS trabaja en silencio. Cada pago de Yape se registra antes de que guardes el teléfono. Tú solo vives."
+                body="Extrae el monto en segundo plano."
               />
               <FeatureCard
                 delay={0.1}
                 accent="rgba(94,234,212,0.2)"
                 icon={<RealtimeSVG />}
                 title="Tu capital, iluminado"
-                body="Dashboard en tiempo real con Supabase Realtime. Ves tu realidad financiera en vivo, no la de ayer."
+                body="Dashboard en tiempo real. Ves tu realidad financiera en vivo, no la de ayer."
               />
               <FeatureCard
                 delay={0.2}
@@ -823,8 +823,17 @@ export default function LandingPage() {
               >↑ Volver arriba</button>
             </div>
 
-            <p style={{ width: '100%', textAlign: 'center', fontSize: '0.75rem', color: 'rgba(255,255,255,0.15)', marginTop: '0.25rem' }}>
-              Hecho con precisión en Lima, Perú.
+            <p className="w-full text-center text-zinc-500 text-sm mt-8">
+              Hecho con precisión por{' '}
+              <a 
+                href="https://tresapps.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-zinc-400 hover:text-purple-400 transition-colors font-medium"
+              >
+                TresApps.app
+              </a>{' '}
+              - Perú.
             </p>
           </div>
         </footer>
