@@ -58,6 +58,18 @@ export default function DashboardClient({
   const [total, setTotal] = useState(initialTotal)
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
   const [copied, setCopied] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(true)
+
+  useEffect(() => {
+    if (localStorage.getItem('aura_onboarding_dismissed') === 'true') {
+      setShowOnboarding(false)
+    }
+  }, [])
+
+  function dismissOnboarding() {
+    localStorage.setItem('aura_onboarding_dismissed', 'true')
+    setShowOnboarding(false)
+  }
   const [copiedProd, setCopiedProd] = useState(false)
   const [realtimeStatus, setRealtimeStatus] = useState<'connected' | 'connecting' | 'disconnected'>('connecting')
   const [toast, setToast] = useState<string | null>(null)
@@ -266,6 +278,7 @@ export default function DashboardClient({
         {/* ══════════════════════════════════════════════════ */}
         {/* SECCIÓN DE INSTALACIÓN */}
         {/* ══════════════════════════════════════════════════ */}
+        {showOnboarding && (
         <div 
           className="card" 
           style={{ 
@@ -358,8 +371,36 @@ export default function DashboardClient({
             >
               {copiedProd ? '✓ ¡Copiado!' : '📋 Copiar Webhook'}
             </button>
+
+            <button
+              onClick={dismissOnboarding}
+              className="btn btn-ghost"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.625rem 1.25rem',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                background: 'transparent',
+                border: '1px solid transparent',
+                borderRadius: '0.5rem',
+                transition: 'all 200ms',
+                cursor: 'pointer',
+                color: 'var(--color-muted)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--color-text)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--color-muted)'
+              }}
+            >
+              Ya lo instalé
+            </button>
           </div>
         </div>
+        )}
 
         {/* ══════════════════════════════════════════════════ */}
         {/* AC-02 · Webhook URL Card */}
@@ -402,6 +443,7 @@ export default function DashboardClient({
         {/* ══════════════════════════════════════════════════ */}
         {/* AC-03 · 3-Step iOS Shortcut Guide */}
         {/* ══════════════════════════════════════════════════ */}
+        {showOnboarding && (
         <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
             <span style={{ fontSize: '1.25rem' }}>📱</span>
@@ -462,6 +504,7 @@ export default function DashboardClient({
             />
           </div>
         </div>
+        )}
 
         {/* Recent transactions */}
         {transactions.length > 0 && (
