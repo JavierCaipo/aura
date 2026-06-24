@@ -2,12 +2,11 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { signOut } from '@/app/actions/auth'
 import DashboardClient from './DashboardClient'
+import { Transaction } from '@/types'
 
 interface Profile {
   webhook_token: string
 }
-
-import { Transaction } from '@/types'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
