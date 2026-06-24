@@ -308,7 +308,7 @@ export default function DashboardClient({
 
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <a
-              href="https://www.icloud.com/shortcuts/69683d26351c4b65a6f087a80729d804"
+              href="https://www.icloud.com/shortcuts/9fdf8759293e42c182d5dfff581fd7cd"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
@@ -456,7 +456,7 @@ export default function DashboardClient({
               action={
                 <a
                   id="shortcut-download-link"
-                  href="https://www.icloud.com/shortcuts/69683d26351c4b65a6f087a80729d804"
+                  href="https://www.icloud.com/shortcuts/9fdf8759293e42c182d5dfff581fd7cd"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-primary"
