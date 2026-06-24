@@ -503,19 +503,12 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.85, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                padding: '0.375rem 1.125rem', borderRadius: '2rem',
-                background: 'rgba(124,92,252,0.1)',
-                border: '1px solid rgba(124,92,252,0.3)',
-                marginBottom: '2.25rem',
-                fontSize: '0.8125rem', color: 'rgba(255,255,255,0.7)', fontWeight: 500,
-              }}
+              className="inline-flex items-center gap-2 px-[18px] py-[6px] rounded-full bg-[#7c5cfc]/10 border border-[#7c5cfc]/30 mb-9 text-[10px] md:text-xs text-white/70 font-medium whitespace-nowrap shadow-[0_0_15px_rgba(124,92,252,0.15)]"
             >
               <motion.span
                 animate={{ opacity: [1, 0.4, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                style={{ color: '#7c5cfc', fontSize: '0.625rem' }}
+                className="text-[#7c5cfc] text-[8px]"
               >●</motion.span>
               Para usuarios de Yape en Perú · Gratuito
             </motion.div>
