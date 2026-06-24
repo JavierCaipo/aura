@@ -14,6 +14,7 @@ import {
   MotionValue,
 } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // ─────────────────────────────────────────────────────────────
 // UTILS
@@ -414,17 +415,18 @@ function Nav() {
       }}
     >
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-        <motion.div
-          whileHover={{ rotate: 10, scale: 1.1 }}
-          style={{
-            width: '2rem', height: '2rem', borderRadius: '0.5625rem',
-            background: 'linear-gradient(135deg, #7c5cfc, #5b4bd4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1rem', boxShadow: '0 2px 20px rgba(124,92,252,0.5)',
-          }}
-        >⚡</motion.div>
-        <span className="font-display" style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#fff' }}>Aura OS</span>
+      <div className="flex items-center gap-3">
+        <Image 
+          src="/logo.png" 
+          alt="Aura OS Logo" 
+          width={36} 
+          height={36} 
+          className="rounded-lg shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+          priority
+        />
+        <span className="text-xl font-bold tracking-tight text-white">
+          Aura OS
+        </span>
       </div>
 
       {/* CTA */}
@@ -778,12 +780,14 @@ export default function LandingPage() {
             display: 'flex', flexWrap: 'wrap',
             alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{
-                width: '1.375rem', height: '1.375rem', borderRadius: '0.375rem',
-                background: 'linear-gradient(135deg, #7c5cfc, #5b4bd4)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6875rem',
-              }}>⚡</div>
+            <div className="flex items-center gap-2">
+              <Image 
+                src="/logo.png" 
+                alt="Aura OS Logo" 
+                width={24} 
+                height={24} 
+                className="rounded-md shadow-[0_0_10px_rgba(168,85,247,0.3)]"
+              />
               <span className="font-display" style={{ fontWeight: 700, fontSize: '0.875rem', color: 'rgba(255,255,255,0.4)' }}>
                 Aura OS
               </span>
