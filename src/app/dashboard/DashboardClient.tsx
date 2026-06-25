@@ -57,6 +57,11 @@ export default function DashboardClient({
 }: Props) {
   const [total, setTotal] = useState(initialTotal)
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
+  const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting')
+  const [toast, setToast] = useState<string | null>(null)
+
+  const supabase = createClient()
+
   // ── Supabase Realtime subscription ──────────────────
   useEffect(() => {
     const channel = supabase
@@ -69,14 +74,14 @@ export default function DashboardClient({
           table: 'transactions',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const newTx = payload.new as Transaction
           setTransactions((prev) => [newTx, ...prev])
           setTotal((prev) => prev + Number(newTx.amount))
           showToast(`+${formatAmount(Number(newTx.amount))} registrado 🎉`)
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         if (status === 'SUBSCRIBED') setRealtimeStatus('connected')
         else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') setRealtimeStatus('disconnected')
         else setRealtimeStatus('connecting')
