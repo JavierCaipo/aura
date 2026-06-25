@@ -11,6 +11,9 @@ export default function CalibrationModal() {
   const [targetSurplus, setTargetSurplus] = useState('')
   const [monthlyLimit, setMonthlyLimit] = useState('')
   const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(true)
+
+  if (!visible) return null
 
   const handleStageSelect = (selectedStage: 'DEBT_EXTERMINATION' | 'WEALTH_EXPANSION') => {
     setStage(selectedStage)
@@ -32,6 +35,7 @@ export default function CalibrationModal() {
       })
 
       if (res.ok) {
+        setVisible(false)
         router.refresh()
       } else {
         console.error('Failed to calibrate')
