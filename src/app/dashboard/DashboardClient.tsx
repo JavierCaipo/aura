@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 import { Transaction } from '@/types'
 import { calculatePacing } from '@/lib/pacing'
+import CategoryBreakdown from './CategoryBreakdown'
 
 interface Props {
   userId: string
@@ -279,6 +280,11 @@ export default function DashboardClient({
             </div>
           )
         })()}
+
+        {/* AC-05 · Category Breakdown */}
+        {transactions.length > 0 && (
+          <CategoryBreakdown transactions={transactions} />
+        )}
 
         {/* Recent transactions */}
         {transactions.length > 0 && (
