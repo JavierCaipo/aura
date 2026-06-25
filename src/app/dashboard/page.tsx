@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { signOut } from '@/app/actions/auth'
 import DashboardClient from './DashboardClient'
+import CalibrationModal from './CalibrationModal'
 import { Transaction } from '@/types'
 
 interface Profile {
@@ -57,6 +58,7 @@ export default async function DashboardPage() {
     .eq('month_year', monthYear)
     .maybeSingle()
 
+  const isCalibrated = !!goal
   const monthlyLimit = goal ? Number(goal.monthly_limit) : 2500
   const targetSurplus = goal ? Number(goal.target_investment_surplus) : 500
 
@@ -67,17 +69,20 @@ export default async function DashboardPage() {
   }
 
   return (
-    <DashboardClient
-      userId={user.id}
-      userEmail={user.email ?? ''}
-      webhookUrl={webhookUrl}
-      initialTotal={initialTotal}
-      initialTransactions={transactions ?? []}
-      monthName={monthName}
-      startOfMonth={startOfMonth}
-      monthlyLimit={monthlyLimit}
-      targetSurplus={targetSurplus}
-      signOutAction={handleSignOut}
-    />
+    <>
+      {!isCalibrated && <CalibrationModal />}
+      <DashboardClient
+        userId={user.id}
+        userEmail={user.email ?? ''}
+        webhookUrl={webhookUrl}
+        initialTotal={initialTotal}
+        initialTransactions={transactions ?? []}
+        monthName={monthName}
+        startOfMonth={startOfMonth}
+        monthlyLimit={monthlyLimit}
+        targetSurplus={targetSurplus}
+        signOutAction={handleSignOut}
+      />
+    </>
   )
 }
