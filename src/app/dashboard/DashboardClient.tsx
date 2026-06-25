@@ -57,45 +57,6 @@ export default function DashboardClient({
 }: Props) {
   const [total, setTotal] = useState(initialTotal)
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
-  const [copied, setCopied] = useState(false)
-  const [showOnboarding, setShowOnboarding] = useState(true)
-
-  useEffect(() => {
-    if (localStorage.getItem('aura_onboarding_dismissed') === 'true') {
-      setShowOnboarding(false)
-    }
-  }, [])
-
-  function dismissOnboarding() {
-    localStorage.setItem('aura_onboarding_dismissed', 'true')
-    setShowOnboarding(false)
-  }
-  const [copiedProd, setCopiedProd] = useState(false)
-  const [realtimeStatus, setRealtimeStatus] = useState<'connected' | 'connecting' | 'disconnected'>('connecting')
-  const [toast, setToast] = useState<string | null>(null)
-  const webhookInputRef = useRef<HTMLInputElement>(null)
-  const supabase = createClient()
-
-  const token = webhookUrl.split('token=')[1] || ''
-  const prodWebhookUrl = `https://aura.tresapps.app/api/webhook/yape?token=${token}`
-
-  async function handleCopyProdWebhook() {
-    try {
-      await navigator.clipboard.writeText(prodWebhookUrl)
-      setCopiedProd(true)
-      setTimeout(() => setCopiedProd(false), 2500)
-    } catch {
-      if (webhookInputRef.current) {
-        webhookInputRef.current.value = prodWebhookUrl
-        webhookInputRef.current.select()
-        document.execCommand('copy')
-        webhookInputRef.current.value = webhookUrl // restore
-        setCopiedProd(true)
-        setTimeout(() => setCopiedProd(false), 2500)
-      }
-    }
-  }
-
   // ── Supabase Realtime subscription ──────────────────
   useEffect(() => {
     const channel = supabase
@@ -129,22 +90,6 @@ export default function DashboardClient({
   function showToast(msg: string) {
     setToast(msg)
     setTimeout(() => setToast(null), 3000)
-  }
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(webhookUrl)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2500)
-    } catch {
-      // Fallback: select the hidden input
-      if (webhookInputRef.current) {
-        webhookInputRef.current.select()
-        document.execCommand('copy')
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2500)
-      }
-    }
   }
 
   const today = new Date()
@@ -204,18 +149,7 @@ export default function DashboardClient({
             </span>
           </div>
 
-          <span style={{ fontSize: '0.8125rem', color: 'var(--color-muted)' }}>{userEmail}</span>
-
-          <form action={signOutAction}>
-            <button
-              id="sign-out-btn"
-              type="submit"
-              className="btn btn-ghost"
-              style={{ padding: '0.375rem 0.75rem', fontSize: '0.8125rem' }}
-            >
-              Salir
-            </button>
-          </form>
+          <UserAvatar userEmail={userEmail} signOutAction={signOutAction} />
         </div>
       </header>
 
@@ -321,237 +255,6 @@ export default function DashboardClient({
           )
         })()}
 
-        {/* ══════════════════════════════════════════════════ */}
-        {/* SECCIÓN DE INSTALACIÓN */}
-        {/* ══════════════════════════════════════════════════ */}
-        {showOnboarding && (
-          <div
-            className="card"
-            style={{
-              padding: '1.5rem',
-              marginBottom: '1.25rem',
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(124,92,252,0.04) 100%)',
-              border: '1px solid rgba(255,255,255,0.05)',
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-          >
-            {/* Subtle background glow */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute', bottom: '-50%', left: '-10%',
-                width: '15rem', height: '15rem',
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%)',
-                pointerEvents: 'none',
-              }}
-            />
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>⚙️</span>
-              <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-                Instalación de Aura OS
-              </h2>
-            </div>
-            <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
-              Descarga el atajo oficial en tu iPhone y copia la dirección del webhook para integrarlo.
-            </p>
-
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <a
-                href="https://www.icloud.com/shortcuts/526d45e6717941858a1b2afaef93bf96"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-                style={{
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.625rem 1.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  background: 'linear-gradient(135deg, var(--color-brand) 0%, #5b4bd4 100%)',
-                  border: 'none',
-                  borderRadius: '0.5rem',
-                  boxShadow: '0 4px 12px rgba(124,92,252,0.25)',
-                  transition: 'all 200ms',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(124,92,252,0.4)'
-                  e.currentTarget.style.transform = 'translateY(-1px)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,92,252,0.25)'
-                  e.currentTarget.style.transform = 'translateY(0)'
-                }}
-              >
-                📲 Instalar en iOS
-              </a>
-
-              <button
-                onClick={handleCopyProdWebhook}
-                className="btn btn-copy"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.625rem 1.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '0.5rem',
-                  transition: 'all 200ms',
-                  cursor: 'pointer',
-                  color: 'var(--color-text)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-                }}
-              >
-                {copiedProd ? '✓ ¡Copiado!' : '📋 Copiar Webhook'}
-              </button>
-
-              <button
-                onClick={dismissOnboarding}
-                className="btn btn-ghost"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.625rem 1.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  background: 'transparent',
-                  border: '1px solid transparent',
-                  borderRadius: '0.5rem',
-                  transition: 'all 200ms',
-                  cursor: 'pointer',
-                  color: 'var(--color-muted)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--color-muted)'
-                }}
-              >
-                Ya lo instalé
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ══════════════════════════════════════════════════ */}
-        {/* AC-02 · Webhook URL Card */}
-        {/* ══════════════════════════════════════════════════ */}
-        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>🔗</span>
-            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-              Tu URL de Webhook
-            </h2>
-          </div>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1rem' }}>
-            Pega esta URL en tu iOS Shortcut para registrar gastos automáticamente.
-          </p>
-
-          <div className="webhook-field">
-            <span className="webhook-url-text">{webhookUrl}</span>
-            <button
-              id="copy-webhook-btn"
-              onClick={handleCopy}
-              className={`btn btn-copy${copied ? ' copied' : ''}`}
-              aria-label="Copiar URL del webhook"
-              style={{ flexShrink: 0 }}
-            >
-              {copied ? '✓ ¡Copiada!' : '📋 Copiar'}
-            </button>
-          </div>
-
-          {/* Hidden input fallback for clipboard */}
-          <input
-            ref={webhookInputRef}
-            readOnly
-            value={webhookUrl}
-            aria-hidden
-            tabIndex={-1}
-            style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0 }}
-          />
-        </div>
-
-        {/* ══════════════════════════════════════════════════ */}
-        {/* AC-03 · 3-Step iOS Shortcut Guide */}
-        {/* ══════════════════════════════════════════════════ */}
-        {showOnboarding && (
-          <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>📱</span>
-              <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-                Instala el Shortcut de iOS
-              </h2>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-              {/* Step 1 */}
-              <Step
-                number={1}
-                icon="⬇️"
-                title="Descarga el Shortcut"
-                description="Abre el siguiente enlace desde tu iPhone para agregar el Shortcut de Yape a tu app Atajos."
-                action={
-                  <a
-                    id="shortcut-download-link"
-                    href="https://www.icloud.com/shortcuts/526d45e6717941858a1b2afaef93bf96"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary"
-                    style={{ fontSize: '0.8125rem', padding: '0.5rem 1rem', textDecoration: 'none' }}
-                  >
-                    Abrir en iPhone →
-                  </a>
-                }
-              />
-
-              <StepDivider />
-
-              {/* Step 2 */}
-              <Step
-                number={2}
-                icon="📋"
-                title="Pega tu URL de Webhook"
-                description='Al instalar el Shortcut, te pedirá tu URL. Cópiala arriba con el botón "Copiar" y pégala en el campo indicado.'
-                action={
-                  <button
-                    onClick={handleCopy}
-                    className={`btn btn-copy${copied ? ' copied' : ''}`}
-                    style={{ fontSize: '0.8125rem', padding: '0.5rem 1rem' }}
-                  >
-                    {copied ? '✓ URL copiada' : '📋 Copiar URL'}
-                  </button>
-                }
-              />
-
-              <StepDivider />
-
-              {/* Step 3 */}
-              <Step
-                number={3}
-                icon="🧪"
-                title="Prueba el Shortcut"
-                description='Abre Atajos → ejecuta "Registrar gasto Yape" → ingresa un monto. El saldo de arriba debería actualizarse en segundos.'
-                action={null}
-              />
-            </div>
-          </div>
-        )}
-
         {/* Recent transactions */}
         {transactions.length > 0 && (
           <div className="card" style={{ padding: '1.5rem' }}>
@@ -579,45 +282,76 @@ export default function DashboardClient({
 
 // ── Sub-components ───────────────────────────────────
 
-function Step({
-  number,
-  icon,
-  title,
-  description,
-  action,
-}: {
-  number: number
-  icon: string
-  title: string
-  description: string
-  action: React.ReactNode
-}) {
-  return (
-    <div style={{ display: 'flex', gap: '1rem', padding: '1rem 0' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', paddingTop: '0.125rem' }}>
-        <div className="step-number active">{number}</div>
-      </div>
-      <div style={{ flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-          <span style={{ fontSize: '1rem' }}>{icon}</span>
-          <h3 className="font-display" style={{ fontSize: '0.9375rem', fontWeight: 600 }}>{title}</h3>
-        </div>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', lineHeight: 1.6, marginBottom: action ? '0.875rem' : 0 }}>
-          {description}
-        </p>
-        {action}
-      </div>
-    </div>
-  )
-}
+function UserAvatar({ userEmail, signOutAction }: { userEmail: string, signOutAction: () => Promise<void> }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const initial = userEmail ? userEmail.charAt(0).toUpperCase() : 'U'
 
-function StepDivider() {
   return (
-    <div style={{ display: 'flex', gap: '1rem', alignItems: 'stretch' }}>
-      <div style={{ width: '2rem', display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: '1px', background: 'var(--color-border)', flex: 1 }} />
-      </div>
-      <div style={{ flex: 1 }} />
+    <div style={{ position: 'relative' }}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '2rem', height: '2rem', borderRadius: '50%',
+          border: '1px solid rgba(255,255,255,0.1)',
+          background: 'rgba(255,255,255,0.05)',
+          color: 'var(--color-text)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
+          transition: 'border-color 200ms'
+        }}
+        onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'}
+        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
+      >
+        {initial}
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setIsOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'absolute', top: 'calc(100% + 0.5rem)', right: 0, zIndex: 50,
+                background: 'rgba(15,15,15,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.75rem',
+                padding: '0.5rem', minWidth: '200px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+              }}
+            >
+              <div style={{ padding: '0.5rem 0.5rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '0.25rem' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--color-muted)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userEmail}</p>
+              </div>
+              <a href="/dashboard/setup" style={{
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                padding: '0.5rem', fontSize: '0.8125rem', color: 'var(--color-text)', textDecoration: 'none',
+                borderRadius: '0.375rem', transition: 'background 200ms'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                ⚙️ Configuración / iOS
+              </a>
+              <form action={signOutAction} style={{ margin: 0 }}>
+                <button type="submit" style={{
+                  display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%',
+                  padding: '0.5rem', fontSize: '0.8125rem', color: 'rgba(248,113,113,0.9)', 
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  borderRadius: '0.375rem', transition: 'background 200ms', textAlign: 'left'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(248,113,113,0.1)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  🚪 Salir
+                </button>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
