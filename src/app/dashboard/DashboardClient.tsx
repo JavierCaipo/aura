@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import { Transaction } from '@/types'
 
@@ -508,40 +509,7 @@ export default function DashboardClient({
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {transactions.slice(0, 8).map((tx) => (
-                <div
-                  key={tx.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.625rem 0.75rem',
-                    background: 'var(--color-subtle)',
-                    borderRadius: '0.5rem',
-                    gap: '0.75rem',
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p
-                      style={{
-                        fontSize: '0.8125rem',
-                        color: 'var(--color-muted)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {tx.raw_text ?? 'Gasto Yape'}
-                    </p>
-                  </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <p style={{ fontWeight: 600, fontSize: '0.9375rem' }}>
-                      {formatAmount(Number(tx.amount))}
-                    </p>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--color-muted)' }}>
-                      {formatDate(tx.created_at)} {formatTime(tx.created_at)}
-                    </p>
-                  </div>
-                </div>
+                <TransactionItem key={tx.id} tx={tx} />
               ))}
             </div>
           </div>
@@ -599,6 +567,171 @@ function StepDivider() {
         <div style={{ width: '1px', background: 'var(--color-border)', flex: 1 }} />
       </div>
       <div style={{ flex: 1 }} />
+    </div>
+  )
+}
+
+function TransactionItem({ tx }: { tx: Transaction }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [category, setCategory] = useState(tx.category_id || 'Uncategorized')
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const categories = ['Alimentación', 'Ocio', 'Transporte', 'Suscripciones', 'Inversión', 'Uncategorized']
+
+  const handleUpdate = async (newCategory: string) => {
+    if (newCategory === category) {
+      setIsOpen(false)
+      return
+    }
+    const previous = category
+    setCategory(newCategory)
+    setIsOpen(false)
+    setIsUpdating(true)
+
+    try {
+      const res = await fetch('/api/transactions/correct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transaction_id: tx.id,
+          category_id: newCategory,
+          // Extract first word as keyword placeholder for the AI learning loop
+          keyword: tx.raw_text ? tx.raw_text.split(' ')[0].toLowerCase() : 'yape'
+        })
+      })
+      if (!res.ok) throw new Error('API Error')
+    } catch {
+      // Revert Optimistic UI if failed
+      setCategory(previous)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  // Use net_amount if available, fallback to amount
+  const displayAmount = tx.net_amount ?? tx.amount
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.75rem',
+        background: 'rgba(255,255,255,0.02)',
+        border: '1px solid rgba(255,255,255,0.05)',
+        borderRadius: '0.75rem',
+        gap: '1rem',
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <p
+          style={{
+            fontSize: '0.875rem',
+            color: 'var(--color-text)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            fontWeight: 500
+          }}
+        >
+          {tx.raw_text ?? 'Gasto Yape'}
+        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {tx.geolocation && (
+            <span style={{ fontSize: '0.6875rem', color: 'var(--color-muted)' }}>📍 {tx.geolocation}</span>
+          )}
+          
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              style={{
+                fontSize: '0.6875rem',
+                background: 'rgba(124,92,252,0.1)',
+                border: '1px solid rgba(124,92,252,0.2)',
+                color: 'var(--color-brand-2)',
+                padding: '0.125rem 0.5rem',
+                borderRadius: '1rem',
+                cursor: 'pointer',
+                opacity: isUpdating ? 0.6 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                transition: 'all 200ms'
+              }}
+            >
+              {category} ▾
+            </button>
+
+            <AnimatePresence>
+              {isOpen && (
+                <>
+                  <div 
+                    style={{ position: 'fixed', inset: 0, zIndex: 40 }} 
+                    onClick={() => setIsOpen(false)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 4px)',
+                      left: 0,
+                      zIndex: 50,
+                      background: 'rgba(15, 15, 15, 0.8)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '0.5rem',
+                      padding: '0.25rem',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                      minWidth: '140px',
+                    }}
+                  >
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => handleUpdate(cat)}
+                        style={{
+                          display: 'block',
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: '0.375rem 0.5rem',
+                          fontSize: '0.75rem',
+                          color: cat === category ? 'var(--color-brand-2)' : 'var(--color-text)',
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: '0.25rem',
+                          cursor: 'pointer',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent'
+                        }}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+      
+      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+        <p style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--color-text)' }}>
+          {formatAmount(Number(displayAmount))}
+        </p>
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-muted)' }}>
+          {formatDate(tx.created_at)} {formatTime(tx.created_at)}
+        </p>
+      </div>
     </div>
   )
 }
