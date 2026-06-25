@@ -17,6 +17,7 @@ interface Props {
   startOfMonth: string
   monthlyLimit: number
   targetSurplus: number
+  financialStage: string | null
   signOutAction: () => Promise<void>
 }
 
@@ -53,6 +54,7 @@ export default function DashboardClient({
   startOfMonth,
   monthlyLimit,
   targetSurplus,
+  financialStage,
   signOutAction,
 }: Props) {
   const [total, setTotal] = useState(initialTotal)
@@ -169,8 +171,14 @@ export default function DashboardClient({
           const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
           const idealPercent = (currentDay / daysInMonth) * 100
           const progressPercent = Math.min(100, (pacing.currentSpend / pacing.monthlyLimit) * 100)
-          const barColor = pacing.isOnTrack ? 'var(--color-brand-2)' : '#f59e0b'
-          const glowColor = pacing.isOnTrack ? 'rgba(94,234,212,0.12)' : 'rgba(245,158,11,0.12)'
+          const isDebt = financialStage === 'DEBT_EXTERMINATION'
+          const barColor = pacing.isOnTrack 
+            ? (isDebt ? '#f59e0b' : 'var(--color-brand-2)') 
+            : '#f87171' // Red for alert
+
+          const glowColor = pacing.isOnTrack 
+            ? (isDebt ? 'rgba(245,158,11,0.12)' : 'rgba(94,234,212,0.12)')
+            : 'rgba(248,113,113,0.12)'
 
           return (
             <div
@@ -198,14 +206,18 @@ export default function DashboardClient({
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                 <div>
                   <p style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
-                    Proyección de Capital • {monthLabel}
+                    {isDebt ? 'Proyección de Exterminio' : 'Proyección de Capital'} • {monthLabel}
                   </p>
                 </div>
                 <div
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.375rem',
-                    background: pacing.isOnTrack ? 'rgba(94,234,212,0.08)' : 'rgba(245,158,11,0.08)',
-                    border: `1px solid ${pacing.isOnTrack ? 'rgba(94,234,212,0.2)' : 'rgba(245,158,11,0.2)'}`,
+                    background: pacing.isOnTrack 
+                      ? (isDebt ? 'rgba(245,158,11,0.08)' : 'rgba(94,234,212,0.08)')
+                      : 'rgba(248,113,113,0.08)',
+                    border: `1px solid ${pacing.isOnTrack 
+                      ? (isDebt ? 'rgba(245,158,11,0.2)' : 'rgba(94,234,212,0.2)')
+                      : 'rgba(248,113,113,0.2)'}`,
                     borderRadius: '2rem',
                     padding: '0.25rem 0.625rem',
                   }}
@@ -242,6 +254,14 @@ export default function DashboardClient({
                 <span style={{ color: 'var(--color-muted)' }}>Límite: {formatAmount(pacing.monthlyLimit)}</span>
               </div>
 
+              {isDebt && !pacing.isOnTrack && (
+                <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'rgba(248,113,113,0.1)', borderLeft: '2px solid #f87171', borderRadius: '0.25rem' }}>
+                  <p style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>
+                    <strong>Alerta:</strong> El ritmo actual compromete tu objetivo de exterminio. Reduce las Fugas de Capital.
+                  </p>
+                </div>
+              )}
+
               <div style={{
                 background: 'rgba(0,0,0,0.2)',
                 border: '1px solid rgba(255,255,255,0.05)',
@@ -250,7 +270,7 @@ export default function DashboardClient({
                 textAlign: 'center'
               }}>
                 <p style={{ fontSize: '0.75rem', color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
-                  Capital Desplegado para Inversión Asegurado
+                  {isDebt ? 'Capital Recuperado para Abono a Deuda' : 'Capital Desplegado para Inversión Asegurado'}
                 </p>
                 <p className="font-display" style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-text)', background: 'linear-gradient(90deg, #fff, #a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   {formatAmount(pacing.targetSurplus)}

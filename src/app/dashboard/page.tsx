@@ -53,7 +53,7 @@ export default async function DashboardPage() {
   // Fetch investment goals
   const { data: goal } = await supabase
     .from('investment_goals')
-    .select('monthly_limit, target_investment_surplus')
+    .select('monthly_limit, target_investment_surplus, financial_stage')
     .eq('user_id', user.id)
     .eq('month_year', monthYear)
     .maybeSingle()
@@ -81,6 +81,7 @@ export default async function DashboardPage() {
         startOfMonth={startOfMonth}
         monthlyLimit={monthlyLimit}
         targetSurplus={targetSurplus}
+        financialStage={goal?.financial_stage ?? null}
         signOutAction={handleSignOut}
       />
     </>
