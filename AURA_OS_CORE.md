@@ -56,6 +56,14 @@ La Fase 2 integra un Cerebro IA para la categorización y proyección de gastos 
 - **Layer 3: Pacing hacia Inversión:** Cálculo en tiempo real de la proyección de gasto a fin de mes (`src/lib/pacing.ts`) y contraste contra `investment_goals` para asegurar que el superávit destinado a inversiones se alcance (Target Investment Surplus).
 
 ### 5.2 Estructura de Datos (Tablas nuevas)
-- `investment_goals`: Límites mensuales y objetivos de inversión.
+- `investment_goals`: Límites mensuales, objetivos de inversión y `financial_stage`.
 - `user_ai_memory`: Base de conocimiento personalizada (palabras clave a categorías forzadas).
 - `transactions` (evolución): Soporta `net_amount` y `parent_transaction_id` para transacciones compuestas.
+
+## 6. Onboarding y Calibración Minimalista
+- Aura OS prioriza la fricción nula y la privacidad del usuario. En lugar de solicitar el total de ingresos brutos, el sistema solicita inputs tácticos:
+  - **Límite de Gasto Vital (monthly_limit):** Cuánto capital despliega el usuario para operar.
+  - **Target de Inversión (target_investment_surplus):** Cuánto planea invertir.
+  - **Etapa Financiera (financial_stage):** Estado actual de la estrategia (e.g. `DEBT_EXTERMINATION` o `WEALTH_EXPANSION`).
+- El cálculo del *Pacing* funciona netamente contrastando los gastos detectados contra estos límites auto-impuestos.
+- El endpoint `POST /api/calibration` recibe esta data y efectúa un UPSERT vinculando la configuración al mes actual en curso (`month_year`).
