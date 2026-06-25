@@ -47,6 +47,8 @@ export async function POST(request: Request) {
     .select('keyword, forced_category')
     .eq('user_id', profile.id)
 
+  const userLocation = body.location || "Ubicación no proporcionada"
+
   // 6. Call OpenRouter
   let category_id = 'Uncategorized'
   let net_amount = amount
@@ -67,9 +69,10 @@ ${JSON.stringify(memories || [])}
   - "Expansión y Activos": Educación, negocios, inversiones.
   - "Fugas de Capital": Gastos impulsivos, sin valor real, vicios.
   - "Amortiguación de Riesgo": Seguros, fondo de emergencia.
-  - "Uncategorized": Solo si es absolutamente imposible deducir.`
+  - "Uncategorized": Solo si es absolutamente imposible deducir.
+6. If location is 'Ubicación no proporcionada', rely entirely on the transaction text and time to infer the category with high accuracy.`
 
-      const userPrompt = `Transaction: ${body.raw_text} | Amount: ${amount} | Time: ${body.time || 'unknown'} | Location: ${body.location || 'unknown'}`
+      const userPrompt = `Transaction: ${body.raw_text} | Amount: ${amount} | Time: ${body.time || 'unknown'} | Location: ${userLocation}`
 
       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -111,7 +114,7 @@ ${JSON.stringify(memories || [])}
       raw_text: body.raw_text ?? null,
       category_id,
       net_amount,
-      geolocation: body.location ?? null
+      geolocation: userLocation === "Ubicación no proporcionada" ? null : userLocation
     })
     .select('id, amount, created_at')
     .single()

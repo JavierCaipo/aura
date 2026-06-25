@@ -279,6 +279,40 @@ export default function SetupClient({ webhookToken, userEmail }: Props) {
           </div>
         </div>
 
+        {/* ══════════════════════════════════════════════════ */}
+        {/* AC-04 · Notas de Calibración */}
+        {/* ══════════════════════════════════════════════════ */}
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
+            <span style={{ fontSize: '1.25rem' }}>🧠</span>
+            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
+              Notas de Calibración del Sistema
+            </h2>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div>
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.375rem' }}>
+                1. Privacidad Espacial (Ubicación)
+              </h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', lineHeight: 1.6 }}>
+                Al ejecutar el atajo por primera vez, iOS solicitará permiso de ubicación. Aura OS utiliza esta coordenada en milisegundos para dotar a la IA de contexto ambiental (ej. diferenciar un restaurante de un peaje). Si prefieres no compartirla, selecciona 'No permitir'. Nuestro motor seguirá funcionando impecablemente utilizando solo el contexto de tus palabras.
+              </p>
+            </div>
+
+            <div style={{ height: '1px', background: 'var(--color-border)' }} />
+
+            <div>
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.375rem' }}>
+                2. Simulacros Manuales
+              </h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', lineHeight: 1.6 }}>
+                Si tocas el Atajo manualmente desde la app, verás un mensaje técnico indicando `amount requerido`. Esto es el sistema de seguridad protegiendo tu base de datos al no detectar un monto real. Para probar el sistema correctamente, usa la opción 'Compartir' desde una nota de texto que simule un Yape.
+              </p>
+            </div>
+          </div>
+        </div>
+
       </main>
     </div>
   )
