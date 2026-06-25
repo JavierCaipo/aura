@@ -47,6 +47,18 @@ export default async function DashboardPage() {
   const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/yape?token=${profile.webhook_token}`
 
   const monthName = now.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' })
+  const monthYear = startOfMonth.substring(0, 7) // "YYYY-MM"
+
+  // Fetch investment goals
+  const { data: goal } = await supabase
+    .from('investment_goals')
+    .select('monthly_limit, target_investment_surplus')
+    .eq('user_id', user.id)
+    .eq('month_year', monthYear)
+    .maybeSingle()
+
+  const monthlyLimit = goal ? Number(goal.monthly_limit) : 2500
+  const targetSurplus = goal ? Number(goal.target_investment_surplus) : 500
 
   async function handleSignOut() {
     'use server'
@@ -63,6 +75,8 @@ export default async function DashboardPage() {
       initialTransactions={transactions ?? []}
       monthName={monthName}
       startOfMonth={startOfMonth}
+      monthlyLimit={monthlyLimit}
+      targetSurplus={targetSurplus}
       signOutAction={handleSignOut}
     />
   )

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { Transaction } from '@/types'
+import { calculatePacing } from '@/lib/pacing'
 
 interface Props {
   userId: string
@@ -14,6 +15,8 @@ interface Props {
   initialTransactions: Transaction[]
   monthName: string
   startOfMonth: string
+  monthlyLimit: number
+  targetSurplus: number
   signOutAction: () => Promise<void>
 }
 
@@ -48,6 +51,8 @@ export default function DashboardClient({
   initialTransactions,
   monthName,
   startOfMonth,
+  monthlyLimit,
+  targetSurplus,
   signOutAction,
 }: Props) {
   const [total, setTotal] = useState(initialTotal)
@@ -217,58 +222,104 @@ export default function DashboardClient({
       <main style={{ maxWidth: '800px', margin: '0 auto' }}>
 
         {/* ══════════════════════════════════════════════════ */}
-        {/* AC-04 · Balance Card */}
+        {/* AC-04 · Pacing Card */}
         {/* ══════════════════════════════════════════════════ */}
-        <div
-          className="card"
-          style={{
-            padding: '2rem',
-            marginBottom: '1.25rem',
-            background: 'linear-gradient(135deg, var(--color-surface) 0%, rgba(124,92,252,0.06) 100%)',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Background glow */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute', top: '-2rem', right: '-2rem',
-              width: '12rem', height: '12rem',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(124,92,252,0.12) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }}
-          />
+        {(() => {
+          const pacing = calculatePacing(transactions, monthlyLimit, targetSurplus)
+          const currentDay = today.getDate()
+          const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
+          const idealPercent = (currentDay / daysInMonth) * 100
+          const progressPercent = Math.min(100, (pacing.currentSpend / pacing.monthlyLimit) * 100)
+          const barColor = pacing.isOnTrack ? 'var(--color-brand-2)' : '#f59e0b'
+          const glowColor = pacing.isOnTrack ? 'rgba(94,234,212,0.12)' : 'rgba(245,158,11,0.12)'
 
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-            <div>
-              <p style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
-                Gastado en {monthLabel} {yearLabel}
-              </p>
-            </div>
+          return (
             <div
+              className="card"
               style={{
-                display: 'flex', alignItems: 'center', gap: '0.375rem',
-                background: 'rgba(94,234,212,0.08)',
-                border: '1px solid rgba(94,234,212,0.2)',
-                borderRadius: '2rem',
-                padding: '0.25rem 0.625rem',
+                padding: '2rem',
+                marginBottom: '1.25rem',
+                background: `linear-gradient(135deg, var(--color-surface) 0%, ${glowColor} 100%)`,
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
-              <div className="pulse-dot" />
-              <span style={{ fontSize: '0.6875rem', color: 'var(--color-brand-2)', fontWeight: 600 }}>TIEMPO REAL</span>
+              {/* Background glow */}
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute', top: '-2rem', right: '-2rem',
+                  width: '12rem', height: '12rem',
+                  borderRadius: '50%',
+                  background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
+                  pointerEvents: 'none',
+                }}
+              />
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                <div>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+                    Proyección de Capital • {monthLabel}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '0.375rem',
+                    background: pacing.isOnTrack ? 'rgba(94,234,212,0.08)' : 'rgba(245,158,11,0.08)',
+                    border: `1px solid ${pacing.isOnTrack ? 'rgba(94,234,212,0.2)' : 'rgba(245,158,11,0.2)'}`,
+                    borderRadius: '2rem',
+                    padding: '0.25rem 0.625rem',
+                  }}
+                >
+                  <div className="pulse-dot" style={{ background: barColor, boxShadow: `0 0 8px ${barColor}` }} />
+                  <span style={{ fontSize: '0.6875rem', color: barColor, fontWeight: 600 }}>
+                    {pacing.isOnTrack ? 'ÓPTIMO' : 'ALERTA'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div style={{ position: 'relative', height: '8px', background: 'rgba(255,255,255,0.08)', borderRadius: '4px', marginBottom: '1rem' }}>
+                {/* Ideal Marker */}
+                <div style={{
+                  position: 'absolute', top: '-4px', bottom: '-4px', width: '2px',
+                  background: 'rgba(255,255,255,0.4)', left: `${idealPercent}%`, zIndex: 2
+                }} />
+                {/* Actual Progress */}
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 1, ease: 'easeOut' }}
+                  style={{
+                    position: 'absolute', top: 0, bottom: 0, left: 0,
+                    background: barColor, borderRadius: '4px', zIndex: 1,
+                    boxShadow: `0 0 10px ${barColor}`
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '0.8125rem' }}>
+                <span style={{ color: 'var(--color-text)' }}>Gastado: {formatAmount(pacing.currentSpend)}</span>
+                <span style={{ color: 'var(--color-muted)' }}>Límite: {formatAmount(pacing.monthlyLimit)}</span>
+              </div>
+
+              <div style={{
+                background: 'rgba(0,0,0,0.2)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                padding: '1rem',
+                borderRadius: '0.75rem',
+                textAlign: 'center'
+              }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+                  Capital Desplegado para Inversión Asegurado
+                </p>
+                <p className="font-display" style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-text)', background: 'linear-gradient(90deg, #fff, #a1a1aa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  {formatAmount(pacing.targetSurplus)}
+                </p>
+              </div>
             </div>
-          </div>
-
-          <div className="amount-display" style={{ marginBottom: '0.75rem' }}>
-            {formatAmount(total)}
-          </div>
-
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)' }}>
-            {transactions.length} {transactions.length === 1 ? 'transacción' : 'transacciones'} este mes
-          </p>
-        </div>
+          )
+        })()}
 
         {/* ══════════════════════════════════════════════════ */}
         {/* SECCIÓN DE INSTALACIÓN */}

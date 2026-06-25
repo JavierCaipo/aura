@@ -463,6 +463,87 @@ function Nav() {
 }
 
 // ─────────────────────────────────────────────────────────────
+// TAXONOMY SECTION
+// ─────────────────────────────────────────────────────────────
+function TaxonomySection() {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+
+  const items = [
+    {
+      title: "Infraestructura Vital",
+      desc: "El costo base de mantener tu imperio operativo (servicios, alquiler, despensa).",
+      icon: "🏛️",
+      color: "rgba(255,255,255,0.15)"
+    },
+    {
+      title: "Ocio Estratégico",
+      desc: "Experiencias y networking calculados. Tienen un límite de ROI.",
+      icon: "🥂",
+      color: "rgba(124,92,252,0.4)"
+    },
+    {
+      title: "Expansión y Activos",
+      desc: "El dinero que trabaja para ti. Inversiones, educación y capital.",
+      icon: "📈",
+      color: "rgba(94,234,212,0.4)"
+    },
+    {
+      title: "Fugas de Capital",
+      desc: "La alerta roja. Gastos impulsivos, penalidades o deuda mala.",
+      icon: "🚨",
+      color: "rgba(244,114,182,0.4)"
+    },
+    {
+      title: "Amortiguación de Riesgo",
+      desc: "Tu escudo táctico contra imprevistos y emergencias.",
+      icon: "🛡️",
+      color: "rgba(59,130,246,0.4)"
+    }
+  ]
+
+  return (
+    <section ref={ref} style={{ padding: 'clamp(4rem,8vw,6rem) 1.25rem', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(3rem,6vw,4rem)' }}>
+          <ClipReveal>
+            <p style={{ fontSize: '0.75rem', color: '#7c5cfc', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.875rem' }}>
+              La Taxonomía del Capital
+            </p>
+          </ClipReveal>
+          <ClipReveal delay={0.1}>
+            <h2 className="font-display section-h2" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>
+              Cada sol tiene <span style={{ color: 'rgba(255,255,255,0.3)' }}>una misión.</span>
+            </h2>
+          </ClipReveal>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '1.25rem'
+        }}>
+          {items.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+              animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              transition={{ duration: 0.8, delay: 0.1 * i, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <TiltCard className="feat-card" glowColor={item.color} intensity={6}>
+                <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>{item.icon}</div>
+                <h3 className="font-display feat-title" style={{ fontSize: '1.125rem' }}>{item.title}</h3>
+                <p className="feat-body" style={{ fontSize: '0.875rem' }}>{item.desc}</p>
+              </TiltCard>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────
 export default function LandingPage() {
@@ -618,6 +699,11 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
         </section>
+
+        {/* ══════════════════════════════════════════ */}
+        {/* TAXONOMY OF CAPITAL */}
+        {/* ══════════════════════════════════════════ */}
+        <TaxonomySection />
 
         {/* ══════════════════════════════════════════ */}
         {/* SCROLLYTELLING DEMO */}
