@@ -60,7 +60,14 @@ Rules:
 2. Return a STRICT JSON object: { "category_id": string, "net_amount": number, "confidence": number }
 3. 'net_amount' is usually equal to amount, UNLESS the text implies a split bill, refund, or reimbursement (e.g. "mitad", "tu parte"). Then calculate the actual net spend for the user.
 4. Use the user's custom memory rules if the text contains a keyword:
-${JSON.stringify(memories || [])}`
+${JSON.stringify(memories || [])}
+5. "category_id" MUST BE EXACTLY ONE OF THESE:
+  - "Infraestructura Vital": Gastos necesarios para el día a día (vivienda, supermercado, salud).
+  - "Ocio Estratégico": Disfrute que recarga energía (salidas, restaurantes, hobbies).
+  - "Expansión y Activos": Educación, negocios, inversiones.
+  - "Fugas de Capital": Gastos impulsivos, sin valor real, vicios.
+  - "Amortiguación de Riesgo": Seguros, fondo de emergencia.
+  - "Uncategorized": Solo si es absolutamente imposible deducir.`
 
       const userPrompt = `Transaction: ${body.raw_text} | Amount: ${amount} | Time: ${body.time || 'unknown'} | Location: ${body.location || 'unknown'}`
 

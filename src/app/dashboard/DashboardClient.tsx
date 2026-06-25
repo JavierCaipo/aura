@@ -576,7 +576,14 @@ function TransactionItem({ tx }: { tx: Transaction }) {
   const [category, setCategory] = useState(tx.category_id || 'Uncategorized')
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const categories = ['Alimentación', 'Ocio', 'Transporte', 'Suscripciones', 'Inversión', 'Uncategorized']
+  const categories = [
+    'Infraestructura Vital',
+    'Ocio Estratégico',
+    'Expansión y Activos',
+    'Fugas de Capital',
+    'Amortiguación de Riesgo',
+    'Uncategorized'
+  ]
 
   const handleUpdate = async (newCategory: string) => {
     if (newCategory === category) {
