@@ -195,8 +195,8 @@ export default function DashboardClient({
                 background: realtimeStatus === 'connected'
                   ? 'var(--color-brand-2)'
                   : realtimeStatus === 'connecting'
-                  ? '#fbbf24'
-                  : '#f87171',
+                    ? '#fbbf24'
+                    : '#f87171',
               }}
             />
             <span style={{ fontSize: '0.75rem', color: 'var(--color-muted)' }}>
@@ -325,127 +325,127 @@ export default function DashboardClient({
         {/* SECCIÓN DE INSTALACIÓN */}
         {/* ══════════════════════════════════════════════════ */}
         {showOnboarding && (
-        <div 
-          className="card" 
-          style={{ 
-            padding: '1.5rem', 
-            marginBottom: '1.25rem',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(124,92,252,0.04) 100%)',
-            border: '1px solid rgba(255,255,255,0.05)',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Subtle background glow */}
           <div
-            aria-hidden
+            className="card"
             style={{
-              position: 'absolute', bottom: '-50%', left: '-10%',
-              width: '15rem', height: '15rem',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%)',
-              pointerEvents: 'none',
+              padding: '1.5rem',
+              marginBottom: '1.25rem',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(124,92,252,0.04) 100%)',
+              border: '1px solid rgba(255,255,255,0.05)',
+              position: 'relative',
+              overflow: 'hidden',
             }}
-          />
+          >
+            {/* Subtle background glow */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute', bottom: '-50%', left: '-10%',
+                width: '15rem', height: '15rem',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }}
+            />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>⚙️</span>
-            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-              Instalación de Aura OS
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <span style={{ fontSize: '1.25rem' }}>⚙️</span>
+              <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
+                Instalación de Aura OS
+              </h2>
+            </div>
+            <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
+              Descarga el atajo oficial en tu iPhone y copia la dirección del webhook para integrarlo.
+            </p>
+
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <a
+                href="https://www.icloud.com/shortcuts/526d45e6717941858a1b2afaef93bf96"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+                style={{
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.625rem 1.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  background: 'linear-gradient(135deg, var(--color-brand) 0%, #5b4bd4 100%)',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  boxShadow: '0 4px 12px rgba(124,92,252,0.25)',
+                  transition: 'all 200ms',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(124,92,252,0.4)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,92,252,0.25)'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
+              >
+                📲 Instalar en iOS
+              </a>
+
+              <button
+                onClick={handleCopyProdWebhook}
+                className="btn btn-copy"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.625rem 1.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '0.5rem',
+                  transition: 'all 200ms',
+                  cursor: 'pointer',
+                  color: 'var(--color-text)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                }}
+              >
+                {copiedProd ? '✓ ¡Copiado!' : '📋 Copiar Webhook'}
+              </button>
+
+              <button
+                onClick={dismissOnboarding}
+                className="btn btn-ghost"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.625rem 1.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  background: 'transparent',
+                  border: '1px solid transparent',
+                  borderRadius: '0.5rem',
+                  transition: 'all 200ms',
+                  cursor: 'pointer',
+                  color: 'var(--color-muted)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--color-text)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--color-muted)'
+                }}
+              >
+                Ya lo instalé
+              </button>
+            </div>
           </div>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
-            Descarga el atajo oficial en tu iPhone y copia la dirección del webhook para integrarlo.
-          </p>
-
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <a
-              href="https://www.icloud.com/shortcuts/9fdf8759293e42c182d5dfff581fd7cd"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-              style={{
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.625rem 1.25rem',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                background: 'linear-gradient(135deg, var(--color-brand) 0%, #5b4bd4 100%)',
-                border: 'none',
-                borderRadius: '0.5rem',
-                boxShadow: '0 4px 12px rgba(124,92,252,0.25)',
-                transition: 'all 200ms',
-                cursor: 'pointer',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(124,92,252,0.4)'
-                e.currentTarget.style.transform = 'translateY(-1px)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,92,252,0.25)'
-                e.currentTarget.style.transform = 'translateY(0)'
-              }}
-            >
-              📲 Instalar en iOS
-            </a>
-
-            <button
-              onClick={handleCopyProdWebhook}
-              className="btn btn-copy"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.625rem 1.25rem',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '0.5rem',
-                transition: 'all 200ms',
-                cursor: 'pointer',
-                color: 'var(--color-text)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-              }}
-            >
-              {copiedProd ? '✓ ¡Copiado!' : '📋 Copiar Webhook'}
-            </button>
-
-            <button
-              onClick={dismissOnboarding}
-              className="btn btn-ghost"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.625rem 1.25rem',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                background: 'transparent',
-                border: '1px solid transparent',
-                borderRadius: '0.5rem',
-                transition: 'all 200ms',
-                cursor: 'pointer',
-                color: 'var(--color-muted)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--color-text)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--color-muted)'
-              }}
-            >
-              Ya lo instalé
-            </button>
-          </div>
-        </div>
         )}
 
         {/* ══════════════════════════════════════════════════ */}
@@ -490,66 +490,66 @@ export default function DashboardClient({
         {/* AC-03 · 3-Step iOS Shortcut Guide */}
         {/* ══════════════════════════════════════════════════ */}
         {showOnboarding && (
-        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>📱</span>
-            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-              Instala el Shortcut de iOS
-            </h2>
+          <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
+              <span style={{ fontSize: '1.25rem' }}>📱</span>
+              <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
+                Instala el Shortcut de iOS
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+              {/* Step 1 */}
+              <Step
+                number={1}
+                icon="⬇️"
+                title="Descarga el Shortcut"
+                description="Abre el siguiente enlace desde tu iPhone para agregar el Shortcut de Yape a tu app Atajos."
+                action={
+                  <a
+                    id="shortcut-download-link"
+                    href="https://www.icloud.com/shortcuts/526d45e6717941858a1b2afaef93bf96"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{ fontSize: '0.8125rem', padding: '0.5rem 1rem', textDecoration: 'none' }}
+                  >
+                    Abrir en iPhone →
+                  </a>
+                }
+              />
+
+              <StepDivider />
+
+              {/* Step 2 */}
+              <Step
+                number={2}
+                icon="📋"
+                title="Pega tu URL de Webhook"
+                description='Al instalar el Shortcut, te pedirá tu URL. Cópiala arriba con el botón "Copiar" y pégala en el campo indicado.'
+                action={
+                  <button
+                    onClick={handleCopy}
+                    className={`btn btn-copy${copied ? ' copied' : ''}`}
+                    style={{ fontSize: '0.8125rem', padding: '0.5rem 1rem' }}
+                  >
+                    {copied ? '✓ URL copiada' : '📋 Copiar URL'}
+                  </button>
+                }
+              />
+
+              <StepDivider />
+
+              {/* Step 3 */}
+              <Step
+                number={3}
+                icon="🧪"
+                title="Prueba el Shortcut"
+                description='Abre Atajos → ejecuta "Registrar gasto Yape" → ingresa un monto. El saldo de arriba debería actualizarse en segundos.'
+                action={null}
+              />
+            </div>
           </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {/* Step 1 */}
-            <Step
-              number={1}
-              icon="⬇️"
-              title="Descarga el Shortcut"
-              description="Abre el siguiente enlace desde tu iPhone para agregar el Shortcut de Yape a tu app Atajos."
-              action={
-                <a
-                  id="shortcut-download-link"
-                  href="https://www.icloud.com/shortcuts/9fdf8759293e42c182d5dfff581fd7cd"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary"
-                  style={{ fontSize: '0.8125rem', padding: '0.5rem 1rem', textDecoration: 'none' }}
-                >
-                  Abrir en iPhone →
-                </a>
-              }
-            />
-
-            <StepDivider />
-
-            {/* Step 2 */}
-            <Step
-              number={2}
-              icon="📋"
-              title="Pega tu URL de Webhook"
-              description='Al instalar el Shortcut, te pedirá tu URL. Cópiala arriba con el botón "Copiar" y pégala en el campo indicado.'
-              action={
-                <button
-                  onClick={handleCopy}
-                  className={`btn btn-copy${copied ? ' copied' : ''}`}
-                  style={{ fontSize: '0.8125rem', padding: '0.5rem 1rem' }}
-                >
-                  {copied ? '✓ URL copiada' : '📋 Copiar URL'}
-                </button>
-              }
-            />
-
-            <StepDivider />
-
-            {/* Step 3 */}
-            <Step
-              number={3}
-              icon="🧪"
-              title="Prueba el Shortcut"
-              description='Abre Atajos → ejecuta "Registrar gasto Yape" → ingresa un monto. El saldo de arriba debería actualizarse en segundos.'
-              action={null}
-            />
-          </div>
-        </div>
         )}
 
         {/* Recent transactions */}
@@ -699,7 +699,7 @@ function TransactionItem({ tx }: { tx: Transaction }) {
           {tx.geolocation && (
             <span style={{ fontSize: '0.6875rem', color: 'var(--color-muted)' }}>📍 {tx.geolocation}</span>
           )}
-          
+
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -724,8 +724,8 @@ function TransactionItem({ tx }: { tx: Transaction }) {
             <AnimatePresence>
               {isOpen && (
                 <>
-                  <div 
-                    style={{ position: 'fixed', inset: 0, zIndex: 40 }} 
+                  <div
+                    style={{ position: 'fixed', inset: 0, zIndex: 40 }}
                     onClick={() => setIsOpen(false)}
                   />
                   <motion.div
@@ -781,7 +781,7 @@ function TransactionItem({ tx }: { tx: Transaction }) {
           </div>
         </div>
       </div>
-      
+
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
         <p style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--color-text)' }}>
           {formatAmount(Number(displayAmount))}
