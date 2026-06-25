@@ -16,21 +16,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Body inválido' }, { status: 422 })
   }
 
-  const { transaction_id, category_id, keyword } = body
+  let { transaction_id, category_id, keyword } = body
 
-  if (!transaction_id || !category_id || !keyword) {
-    return NextResponse.json({ error: 'Faltan parámetros' }, { status: 422 })
+  // Ensure keyword is safe
+  if (!keyword || keyword.trim() === '') {
+    keyword = 'yape'
+  }
+
+  if (!transaction_id || !category_id) {
+    return NextResponse.json({ error: 'Faltan parámetros (transaction_id, category_id)' }, { status: 422 })
   }
 
   // Update transaction
-  const { error: txError } = await supabase
+  const { data: updatedTx, error: txError } = await supabase
     .from('transactions')
     .update({ category_id })
     .eq('id', transaction_id)
     .eq('user_id', user.id)
+    .select()
+    .single()
 
   if (txError) {
-    return NextResponse.json({ error: 'Error actualizando transacción' }, { status: 500 })
+    console.error('[correct api] Error actualizando transacción:', txError)
+    return NextResponse.json({ error: txError.message }, { status: 500 })
+  }
+
+  if (!updatedTx) {
+    return NextResponse.json({ error: 'Transacción no encontrada o bloqueada por políticas de seguridad (RLS)' }, { status: 404 })
   }
 
   // 1. Delete existing keyword for user to simulate UPSERT without unique constraint
@@ -50,7 +62,8 @@ export async function POST(request: Request) {
     })
 
   if (memError) {
-    return NextResponse.json({ error: 'Error actualizando memoria IA' }, { status: 500 })
+    console.error('[correct api] Error actualizando memoria IA:', memError)
+    return NextResponse.json({ error: memError.message }, { status: 500 })
   }
 
   return NextResponse.json({ success: true })
