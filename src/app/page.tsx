@@ -573,7 +573,7 @@ export default function LandingPage() {
           position: 'relative', minHeight: '100dvh',
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
-          padding: 'clamp(7rem,14vw,11rem) 1.25rem 5rem',
+          padding: 'clamp(9.5rem,18vw,13rem) 1.25rem 5rem',
           textAlign: 'center',
         }}>
           <motion.div
