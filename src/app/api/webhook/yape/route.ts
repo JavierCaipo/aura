@@ -43,7 +43,8 @@ export async function POST(request: Request) {
 
   const amount = Number(body?.amount)
   if (!body?.amount || isNaN(amount) || amount <= 0) {
-    return NextResponse.json({ error: 'amount requerido y debe ser positivo' }, { status: 422 })
+    console.error("[CRITICAL_ERROR] Payload recibido vacío. Revisar configuración de Apple Shortcuts.");
+    return NextResponse.json({ message: "Payload vacío, revisa la configuración del atajo" }, { status: 200 })
   }
 
   const raw_text = body?.raw_text || ''
