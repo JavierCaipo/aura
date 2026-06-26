@@ -36,6 +36,8 @@ export async function POST(request: Request) {
     console.error('Invalid JSON in webhook', err)
   }
 
+  console.log("[WEBHOOK_TRACE] Payload recibido:", body)
+
   const amount = Number(body?.amount)
   if (!body?.amount || isNaN(amount) || amount <= 0) {
     return NextResponse.json({ error: 'amount requerido y debe ser positivo' }, { status: 422 })
@@ -124,6 +126,8 @@ ${JSON.stringify(memories || [])}
     })
     .select('id, amount, created_at')
     .single()
+
+  console.log("[WEBHOOK_TRACE] Resultado Supabase:", { data: transaction, error: insertError })
 
   if (insertError) {
     console.error('[webhook] insert error:', insertError)
