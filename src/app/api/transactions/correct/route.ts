@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     .single()
 
   if (txError) {
-    console.error('[correct api] Error actualizando transacción:', txError)
+    console.error("Supabase Update Error:", txError)
     return NextResponse.json({ error: txError.message }, { status: 500 })
   }
 

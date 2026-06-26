@@ -294,7 +294,7 @@ export default function DashboardClient({
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {transactions.slice(0, 8).map((tx) => (
-                <TransactionItem key={tx.id} tx={tx} />
+                <TransactionItem key={tx.id} tx={tx} onToast={showToast} />
               ))}
             </div>
           </div>
@@ -387,7 +387,7 @@ function UserAvatar({ userEmail, signOutAction }: { userEmail: string, signOutAc
   )
 }
 
-function TransactionItem({ tx }: { tx: Transaction }) {
+function TransactionItem({ tx, onToast }: { tx: Transaction, onToast: (msg: string) => void }) {
   const [isOpen, setIsOpen] = useState(false)
   const [category, setCategory] = useState(tx.category_id || 'Uncategorized')
   const [isUpdating, setIsUpdating] = useState(false)
@@ -426,6 +426,7 @@ function TransactionItem({ tx }: { tx: Transaction }) {
     } catch {
       // Revert Optimistic UI if failed
       setCategory(previous)
+      onToast("Error al guardar la categoría")
     } finally {
       setIsUpdating(false)
     }

@@ -29,17 +29,21 @@ export async function POST(request: Request) {
   }
 
   // 4. Parse & validate body
-  let body: { raw_text?: string; amount?: number; time?: string; location?: string }
+  let body: any = {}
   try {
     body = await request.json()
-  } catch {
-    return NextResponse.json({ error: 'Body inválido' }, { status: 422 })
+  } catch (err) {
+    console.error('Invalid JSON in webhook', err)
   }
 
-  const amount = Number(body.amount)
-  if (!body.amount || isNaN(amount) || amount <= 0) {
+  const amount = Number(body?.amount)
+  if (!body?.amount || isNaN(amount) || amount <= 0) {
     return NextResponse.json({ error: 'amount requerido y debe ser positivo' }, { status: 422 })
   }
+
+  const raw_text = body?.raw_text || ''
+  const userLocation = body?.location || "Ubicación no proporcionada"
+  const time = body?.time || 'unknown'
 
   // 5. Fetch user AI memory
   const { data: memories } = await supabaseAdmin
@@ -47,15 +51,13 @@ export async function POST(request: Request) {
     .select('keyword, forced_category')
     .eq('user_id', profile.id)
 
-  const userLocation = body.location || "Ubicación no proporcionada"
-
   // 6. Call OpenRouter
   let category_id = 'Uncategorized'
   let net_amount = amount
   let confidence = 0
 
-  if (process.env.OPENROUTER_API_KEY && body.raw_text) {
-    try {
+  try {
+    if (process.env.OPENROUTER_API_KEY && raw_text) {
       const systemPrompt = `You are an AI financial categorizer for Aura OS.
 Rules:
 1. Analyze the 'raw_text' of the Yape transaction.
@@ -72,7 +74,7 @@ ${JSON.stringify(memories || [])}
   - "Uncategorized": Solo si es absolutamente imposible deducir.
 6. If location is 'Ubicación no proporcionada', rely entirely on the transaction text and time to infer the category with high accuracy.`
 
-      const userPrompt = `Transaction: ${body.raw_text} | Amount: ${amount} | Time: ${body.time || 'unknown'} | Location: ${userLocation}`
+      const userPrompt = `Transaction: ${raw_text} | Amount: ${amount} | Time: ${time} | Location: ${userLocation}`
 
       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -99,9 +101,13 @@ ${JSON.stringify(memories || [])}
       } else {
         console.error('[openrouter] fetch error:', await res.text())
       }
-    } catch (err) {
-      console.error('[openrouter] exception:', err)
     }
+  } catch (err) {
+    console.error('[openrouter] exception:', err)
+    // Fallback to Uncategorized safely
+    category_id = 'Uncategorized'
+    net_amount = amount
+    confidence = 0
   }
 
   // 7. Insert enriched transaction using the admin client
@@ -111,7 +117,7 @@ ${JSON.stringify(memories || [])}
       user_id: profile.id,
       amount,
       currency: 'PEN',
-      raw_text: body.raw_text ?? null,
+      raw_text: raw_text || null,
       category_id,
       net_amount,
       geolocation: userLocation === "Ubicación no proporcionada" ? null : userLocation
