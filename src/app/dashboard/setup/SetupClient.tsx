@@ -13,21 +13,9 @@ export default function SetupClient({ webhookToken, userEmail }: Props) {
   const [copiedProd, setCopiedProd] = useState(false)
   const webhookInputRef = useRef<HTMLInputElement>(null)
   
-  // Build full URL dynamically on client side to avoid `undefined/api...` bug
-  const [webhookUrl, setWebhookUrl] = useState('')
-  const [prodWebhookUrl, setProdWebhookUrl] = useState('')
-
-  useEffect(() => {
-    // Determine the base origin on the client
-    const origin = window.location.origin
-    setWebhookUrl(`${origin}/api/webhook/yape?token=${webhookToken}`)
-    setProdWebhookUrl(`https://aura.tresapps.app/api/webhook/yape?token=${webhookToken}`)
-  }, [webhookToken])
-
-  async function handleCopy() {
-    if (!webhookUrl) return
+  async function handleCopyToken() {
     try {
-      await navigator.clipboard.writeText(webhookUrl)
+      await navigator.clipboard.writeText(webhookToken)
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
     } catch {
@@ -36,24 +24,6 @@ export default function SetupClient({ webhookToken, userEmail }: Props) {
         document.execCommand('copy')
         setCopied(true)
         setTimeout(() => setCopied(false), 2500)
-      }
-    }
-  }
-
-  async function handleCopyProdWebhook() {
-    if (!prodWebhookUrl) return
-    try {
-      await navigator.clipboard.writeText(prodWebhookUrl)
-      setCopiedProd(true)
-      setTimeout(() => setCopiedProd(false), 2500)
-    } catch {
-      if (webhookInputRef.current) {
-        webhookInputRef.current.value = prodWebhookUrl
-        webhookInputRef.current.select()
-        document.execCommand('copy')
-        webhookInputRef.current.value = webhookUrl // restore
-        setCopiedProd(true)
-        setTimeout(() => setCopiedProd(false), 2500)
       }
     }
   }
@@ -102,13 +72,49 @@ export default function SetupClient({ webhookToken, userEmail }: Props) {
         <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '2rem' }}>Configuración</h1>
 
         {/* ══════════════════════════════════════════════════ */}
-        {/* SECCIÓN DE INSTALACIÓN */}
+        {/* PASO 1: COPIAR TOKEN */}
+        {/* ══════════════════════════════════════════════════ */}
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <span style={{ fontSize: '1.25rem' }}>🔑</span>
+            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
+              1. Copia tu Token de Seguridad
+            </h2>
+          </div>
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1rem' }}>
+            Este token es tu identificador único personal.
+          </p>
+
+          <div className="webhook-field">
+            <span className="webhook-url-text">{webhookToken || 'Cargando...'}</span>
+            <button
+              onClick={handleCopyToken}
+              className={`btn btn-copy${copied ? ' copied' : ''}`}
+              aria-label="Copiar Token"
+              style={{ flexShrink: 0 }}
+            >
+              {copied ? '✓ ¡Copiado!' : '📋 Copiar Token'}
+            </button>
+          </div>
+
+          <input
+            ref={webhookInputRef}
+            readOnly
+            value={webhookToken}
+            aria-hidden
+            tabIndex={-1}
+            style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0 }}
+          />
+        </div>
+
+        {/* ══════════════════════════════════════════════════ */}
+        {/* PASO 2: INSTALAR ATAJO */}
         {/* ══════════════════════════════════════════════════ */}
         <div
           className="card"
           style={{
             padding: '1.5rem',
-            marginBottom: '1.25rem',
+            marginBottom: '1.5rem',
             background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(124,92,252,0.04) 100%)',
             border: '1px solid rgba(255,255,255,0.05)',
             position: 'relative',
@@ -130,153 +136,46 @@ export default function SetupClient({ webhookToken, userEmail }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '1.25rem' }}>⚙️</span>
             <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-              Instalación de Aura OS
+              2. Instala el Motor en tu iPhone
             </h2>
           </div>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
-            Descarga el atajo oficial en tu iPhone y copia la dirección del webhook para integrarlo.
+
+          <a
+            href="https://www.icloud.com/shortcuts/00adb50e59bb4cc5b1a255e158ff9957"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+            style={{
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.75rem 1.5rem',
+              fontSize: '1rem',
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, var(--color-brand) 0%, #5b4bd4 100%)',
+              border: 'none',
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 12px rgba(124,92,252,0.25)',
+              transition: 'all 200ms',
+              cursor: 'pointer',
+              marginBottom: '1rem',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(124,92,252,0.4)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,92,252,0.25)'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
+             Instalar Atajo iOS
+          </a>
+
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', lineHeight: 1.5 }}>
+            Al instalar el atajo, iOS te pedirá tu Token. Pégalo y tu ecosistema estará conectado.
           </p>
-
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <a
-              href="https://www.icloud.com/shortcuts/526d45e6717941858a1b2afaef93bf96"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-              style={{
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.625rem 1.25rem',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                background: 'linear-gradient(135deg, var(--color-brand) 0%, #5b4bd4 100%)',
-                border: 'none',
-                borderRadius: '0.5rem',
-                boxShadow: '0 4px 12px rgba(124,92,252,0.25)',
-                transition: 'all 200ms',
-                cursor: 'pointer',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(124,92,252,0.4)'
-                e.currentTarget.style.transform = 'translateY(-1px)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,92,252,0.25)'
-                e.currentTarget.style.transform = 'translateY(0)'
-              }}
-            >
-              📲 Instalar en iOS
-            </a>
-
-            <button
-              onClick={handleCopyProdWebhook}
-              className="btn btn-copy"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.625rem 1.25rem',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '0.5rem',
-                transition: 'all 200ms',
-                cursor: 'pointer',
-                color: 'var(--color-text)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-              }}
-            >
-              {copiedProd ? '✓ ¡Copiado!' : '📋 Copiar Webhook (Prod)'}
-            </button>
-          </div>
-        </div>
-
-        {/* ══════════════════════════════════════════════════ */}
-        {/* AC-02 · Webhook URL Card */}
-        {/* ══════════════════════════════════════════════════ */}
-        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>🔗</span>
-            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-              Tu URL de Webhook Local
-            </h2>
-          </div>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', marginBottom: '1rem' }}>
-            Si estás desarrollando en local (usando ngrok, por ejemplo), puedes copiar esta URL.
-          </p>
-
-          <div className="webhook-field">
-            <span className="webhook-url-text">{webhookUrl || 'Cargando...'}</span>
-            <button
-              id="copy-webhook-btn"
-              onClick={handleCopy}
-              disabled={!webhookUrl}
-              className={`btn btn-copy${copied ? ' copied' : ''}`}
-              aria-label="Copiar URL del webhook"
-              style={{ flexShrink: 0 }}
-            >
-              {copied ? '✓ ¡Copiada!' : '📋 Copiar'}
-            </button>
-          </div>
-
-          <input
-            ref={webhookInputRef}
-            readOnly
-            value={webhookUrl}
-            aria-hidden
-            tabIndex={-1}
-            style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0 }}
-          />
-        </div>
-
-        {/* ══════════════════════════════════════════════════ */}
-        {/* AC-03 · 3-Step iOS Shortcut Guide */}
-        {/* ══════════════════════════════════════════════════ */}
-        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>📱</span>
-            <h2 className="font-display" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
-              Guía de Instalación Rápida
-            </h2>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            <Step
-              number={1}
-              icon="⬇️"
-              title="Descarga el Shortcut"
-              description="Abre el enlace de arriba desde tu iPhone para agregar el Shortcut de Yape a tu app Atajos."
-              action={null}
-            />
-
-            <StepDivider />
-
-            <Step
-              number={2}
-              icon="📋"
-              title="Pega tu URL de Webhook"
-              description='Al instalar el Shortcut, te pedirá tu URL. Cópiala con el botón "Copiar Webhook (Prod)" y pégala en el campo indicado.'
-              action={null}
-            />
-
-            <StepDivider />
-
-            <Step
-              number={3}
-              icon="🧪"
-              title="Prueba el Shortcut"
-              description='Abre Atajos → ejecuta "Registrar gasto Yape" → ingresa un monto. Tu Dashboard se actualizará en vivo.'
-              action={null}
-            />
-          </div>
         </div>
 
         {/* ══════════════════════════════════════════════════ */}
@@ -314,49 +213,6 @@ export default function SetupClient({ webhookToken, userEmail }: Props) {
         </div>
 
       </main>
-    </div>
-  )
-}
-
-function Step({
-  number,
-  icon,
-  title,
-  description,
-  action,
-}: {
-  number: number
-  icon: string
-  title: string
-  description: string
-  action: React.ReactNode
-}) {
-  return (
-    <div style={{ display: 'flex', gap: '1rem', padding: '1rem 0' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', paddingTop: '0.125rem' }}>
-        <div className="step-number active">{number}</div>
-      </div>
-      <div style={{ flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-          <span style={{ fontSize: '1rem' }}>{icon}</span>
-          <h3 className="font-display" style={{ fontSize: '0.9375rem', fontWeight: 600 }}>{title}</h3>
-        </div>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)', lineHeight: 1.6, marginBottom: action ? '0.875rem' : 0 }}>
-          {description}
-        </p>
-        {action}
-      </div>
-    </div>
-  )
-}
-
-function StepDivider() {
-  return (
-    <div style={{ display: 'flex', gap: '1rem', alignItems: 'stretch' }}>
-      <div style={{ width: '2rem', display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: '1px', background: 'var(--color-border)', flex: 1 }} />
-      </div>
-      <div style={{ flex: 1 }} />
     </div>
   )
 }
