@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -63,8 +64,15 @@ export default function DashboardClient({
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting')
   const [toast, setToast] = useState<string | null>(null)
-
+  
+  const router = useRouter()
   const supabase = createClient()
+
+  // Sync state when Server Components push new props (via router.refresh)
+  useEffect(() => {
+    setTransactions(initialTransactions)
+    setTotal(initialTotal)
+  }, [initialTransactions, initialTotal])
 
   // ── Supabase Realtime subscription ──────────────────
   useEffect(() => {
@@ -73,16 +81,20 @@ export default function DashboardClient({
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*', // Listen to INSERT, UPDATE, DELETE
           schema: 'public',
           table: 'transactions',
           filter: `user_id=eq.${userId}`,
         },
         (payload: any) => {
-          const newTx = payload.new as Transaction
-          setTransactions((prev) => [newTx, ...prev])
-          setTotal((prev) => prev + Number(newTx.amount))
-          showToast(`+${formatAmount(Number(newTx.amount))} registrado 🎉`)
+          if (payload.eventType === 'INSERT') {
+            const newTx = payload.new as Transaction
+            showToast(`+${formatAmount(Number(newTx.amount))} registrado 🎉`)
+          } else if (payload.eventType === 'UPDATE') {
+            showToast(`Categoría actualizada en la nube`)
+          }
+          // Invalidate cache and fetch fresh Server Components silently
+          router.refresh()
         }
       )
       .subscribe((status: string) => {
@@ -94,7 +106,7 @@ export default function DashboardClient({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [userId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [userId, router, supabase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function showToast(msg: string) {
     setToast(msg)
