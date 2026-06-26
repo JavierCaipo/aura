@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -126,15 +127,7 @@ export default function DashboardClient({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
-            style={{
-              width: '2rem', height: '2rem',
-              borderRadius: '0.5rem',
-              background: 'linear-gradient(135deg, var(--color-brand), #5b4bd4)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1rem',
-            }}
-          >⚡</div>
+          <Image src="/logo.png" alt="Aura OS Logo" width={32} height={32} />
           <span className="font-display" style={{ fontWeight: 600, fontSize: '1.0625rem' }}>Aura OS</span>
         </div>
 
