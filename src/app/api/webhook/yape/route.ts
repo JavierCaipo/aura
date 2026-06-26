@@ -31,7 +31,10 @@ export async function POST(request: Request) {
   // 4. Parse & validate body
   let body: any = {}
   try {
-    body = await request.json()
+    const rawBody = await request.text()
+    console.log("[DEBUG_PAYLOAD_FULL]", rawBody)
+    body = JSON.parse(rawBody)
+    console.log("[DEBUG_TYPES]", { amount: typeof body.amount, raw_text: typeof body.raw_text })
   } catch (err) {
     console.error('Invalid JSON in webhook', err)
   }
