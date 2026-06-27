@@ -38,7 +38,7 @@ export default async function DashboardPage() {
 
   const { data: transactions } = await supabase
     .from('transactions')
-    .select('id, amount, currency, raw_text, created_at')
+    .select('id, amount, currency, raw_text, created_at, category_id, geolocation, net_amount, parent_transaction_id')
     .eq('user_id', user.id)
     .gte('created_at', startOfMonth)
     .order('created_at', { ascending: false })
