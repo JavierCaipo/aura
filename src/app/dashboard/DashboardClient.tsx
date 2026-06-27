@@ -459,120 +459,125 @@ function TransactionItem({ tx, onToast }: { tx: Transaction, onToast: (msg: stri
     <div
       style={{
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0.75rem',
+        flexDirection: 'column',
+        padding: '0.875rem',
         background: 'rgba(255,255,255,0.02)',
         border: '1px solid rgba(255,255,255,0.05)',
         borderRadius: '0.75rem',
-        gap: '1rem',
+        gap: '0.75rem',
       }}
     >
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+      {/* Row 1: Raw text and Amount */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
         <p
           style={{
-            fontSize: '0.875rem',
+            fontSize: '0.9375rem',
             color: 'var(--color-text)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            fontWeight: 500
+            fontWeight: 500,
+            flex: 1,
+            minWidth: 0
           }}
         >
           {tx.raw_text ?? 'Gasto Yape'}
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {tx.geolocation && (
-            <span style={{ fontSize: '0.6875rem', color: 'var(--color-muted)' }}>📍 {tx.geolocation}</span>
-          )}
-
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              style={{
-                fontSize: '0.6875rem',
-                background: 'rgba(124,92,252,0.1)',
-                border: '1px solid rgba(124,92,252,0.2)',
-                color: 'var(--color-brand-2)',
-                padding: '0.125rem 0.5rem',
-                borderRadius: '1rem',
-                cursor: 'pointer',
-                opacity: isUpdating ? 0.6 : 1,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.25rem',
-                transition: 'all 200ms'
-              }}
-            >
-              {category} ▾
-            </button>
-
-            <AnimatePresence>
-              {isOpen && (
-                <>
-                  <div
-                    style={{ position: 'fixed', inset: 0, zIndex: 40 }}
-                    onClick={() => setIsOpen(false)}
-                  />
-                  <motion.div
-                    initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    style={{
-                      position: 'absolute',
-                      top: 'calc(100% + 4px)',
-                      left: 0,
-                      zIndex: 50,
-                      background: 'rgba(15, 15, 15, 0.8)',
-                      backdropFilter: 'blur(16px)',
-                      WebkitBackdropFilter: 'blur(16px)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '0.5rem',
-                      padding: '0.25rem',
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                      minWidth: '140px',
-                    }}
-                  >
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => handleUpdate(cat)}
-                        style={{
-                          display: 'block',
-                          width: '100%',
-                          textAlign: 'left',
-                          padding: '0.375rem 0.5rem',
-                          fontSize: '0.75rem',
-                          color: cat === category ? 'var(--color-brand-2)' : 'var(--color-text)',
-                          background: 'transparent',
-                          border: 'none',
-                          borderRadius: '0.25rem',
-                          cursor: 'pointer',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent'
-                        }}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <p style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--color-text)' }}>
+        <p style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--color-text)', flexShrink: 0 }}>
           {formatAmount(Number(displayAmount))}
         </p>
-        <p style={{ fontSize: '0.75rem', color: 'var(--color-muted)' }}>
+      </div>
+
+      {/* Row 2: Category Dropdown and Date */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ position: 'relative', flexShrink: 0, maxWidth: '60%' }}>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            style={{
+              fontSize: '0.6875rem',
+              background: 'rgba(124,92,252,0.1)',
+              border: '1px solid rgba(124,92,252,0.2)',
+              color: 'var(--color-brand-2)',
+              padding: '0.25rem 0.625rem',
+              borderRadius: '1rem',
+              cursor: 'pointer',
+              opacity: isUpdating ? 0.6 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              transition: 'all 200ms',
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+            title={category}
+          >
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{category}</span>
+            <span>▾</span>
+          </button>
+
+          <AnimatePresence>
+            {isOpen && (
+              <>
+                <div
+                  style={{ position: 'fixed', inset: 0, zIndex: 40 }}
+                  onClick={() => setIsOpen(false)}
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 4px)',
+                    left: 0,
+                    zIndex: 50,
+                    background: 'rgba(15, 15, 15, 0.85)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '0.5rem',
+                    padding: '0.375rem',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                    minWidth: '180px',
+                  }}
+                >
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => handleUpdate(cat)}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '0.5rem 0.625rem',
+                        fontSize: '0.75rem',
+                        color: cat === category ? 'var(--color-brand-2)' : 'var(--color-text)',
+                        background: 'transparent',
+                        border: 'none',
+                        borderRadius: '0.25rem',
+                        cursor: 'pointer',
+                        transition: 'background 200ms',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent'
+                      }}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-muted)', flexShrink: 0 }}>
           {formatDate(tx.created_at)} {formatTime(tx.created_at)}
         </p>
       </div>
