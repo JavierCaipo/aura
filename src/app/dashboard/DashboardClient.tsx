@@ -412,7 +412,6 @@ function TransactionItem({ tx, onToast }: { tx: Transaction, onToast: (msg: stri
       return
     }
     const previous = category
-    setCategory(newCategory)
     setIsOpen(false)
     setIsUpdating(true)
 
@@ -427,11 +426,18 @@ function TransactionItem({ tx, onToast }: { tx: Transaction, onToast: (msg: stri
           keyword: tx.raw_text ? tx.raw_text.split(' ')[0].toLowerCase() : 'yape'
         })
       })
-      if (!res.ok) throw new Error('API Error')
-    } catch {
-      // Revert Optimistic UI if failed
+      if (!res.ok) {
+        const errData = await res.json()
+        throw new Error(errData.error || 'API Error')
+      }
+      
+      // Update state only after server confirmation
+      setCategory(newCategory)
+    } catch (err: any) {
+      console.error("[SUPABASE_UPDATE_ERROR]", err)
+      onToast(`Error: ${err.message}`)
+      // Explicitly revert UI state just in case, though we didn't optimistically update it this time
       setCategory(previous)
-      onToast("Error al guardar la categoría")
     } finally {
       setIsUpdating(false)
     }
