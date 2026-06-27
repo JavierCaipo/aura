@@ -37,15 +37,14 @@ export async function POST(request: Request) {
       .eq('id', transaction_id)
       .eq('user_id', user.id)
       .select()
-      .single()
 
     if (txError) {
       console.error("Supabase Update Error:", txError)
       return NextResponse.json({ error: txError.message }, { status: 500 })
     }
 
-    if (!updatedTx) {
-      return NextResponse.json({ error: 'Transacción no encontrada o bloqueada por políticas de seguridad (RLS)' }, { status: 404 })
+    if (!updatedTx || updatedTx.length === 0) {
+      return NextResponse.json({ error: 'Ninguna fila actualizada. Verifica el ID o las políticas RLS.' }, { status: 404 })
     }
 
     // 1. Delete existing keyword for user to simulate UPSERT without unique constraint

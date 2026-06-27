@@ -64,6 +64,7 @@ export default function DashboardClient({
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting')
   const [toast, setToast] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
   
   const router = useRouter()
   const supabase = createClient()
@@ -108,9 +109,17 @@ export default function DashboardClient({
     }
   }, [userId, router, supabase]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   function showToast(msg: string) {
     setToast(msg)
     setTimeout(() => setToast(null), 3000)
+  }
+
+  if (!mounted) {
+    return <div style={{ minHeight: '100dvh', background: 'var(--color-bg)' }} />
   }
 
   const today = new Date()
