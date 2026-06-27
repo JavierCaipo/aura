@@ -57,17 +57,27 @@ export async function POST(request: Request) {
     .select('keyword, forced_category')
     .eq('user_id', profile.id)
 
+  // 5.1 Fetch recent transaction history for contextual analysis
+  const { data: recentTransactions } = await supabaseAdmin
+    .from('transactions')
+    .select('amount, category_id, raw_text, created_at')
+    .eq('user_id', profile.id)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
   // 6. Call OpenRouter
   let category_id = 'Uncategorized'
   let net_amount = amount
   let confidence = 0
+  let ai_insight = ''
+  let is_expense = true
 
   try {
     if (process.env.OPENROUTER_API_KEY && raw_text) {
       const systemPrompt = `You are an AI financial categorizer for Aura OS.
 Rules:
 1. Analyze the 'raw_text' of the Yape transaction.
-2. Return a STRICT JSON object: { "category_id": string, "net_amount": number, "confidence": number }
+2. Return a STRICT JSON object: { "category_id": string, "net_amount": number, "confidence": number, "ai_insight": string, "is_expense": boolean }
 3. 'net_amount' is usually equal to amount, UNLESS the text implies a split bill, refund, or reimbursement (e.g. "mitad", "tu parte"). Then calculate the actual net spend for the user.
 4. Use the user's custom memory rules if the text contains a keyword:
 ${JSON.stringify(memories || [])}
@@ -78,7 +88,11 @@ ${JSON.stringify(memories || [])}
   - "Fugas de Capital": Gastos impulsivos, sin valor real, vicios.
   - "Amortiguación de Riesgo": Seguros, fondo de emergencia.
   - "Uncategorized": Solo si es absolutamente imposible deducir.
-6. If location is 'Ubicación no proporcionada', rely entirely on the transaction text and time to infer the category with high accuracy.`
+6. If location is 'Ubicación no proporcionada', rely entirely on the transaction text and time to infer the category with high accuracy.
+7. [HISTORIAL RECIENTE DEL USUARIO]:
+${JSON.stringify(recentTransactions || [])}
+8. Analiza el Historial Reciente para detectar patrones. Si hay fugas constantes, usa el perfil 'Aniquilador de Deudas' con un tono severo en 'ai_insight'. Si hay disciplina, usa el 'Inversor'. Usa el historial para deducir categorías de contactos frecuentes.
+9. Responde STRICTAMENTE con el JSON estructurado solicitado sin ningún texto adicional.`
 
       const userPrompt = `Transaction: ${raw_text} | Amount: ${amount} | Time: ${time} | Location: ${userLocation}`
 
@@ -104,6 +118,8 @@ ${JSON.stringify(memories || [])}
         category_id = aiData.category_id || 'Uncategorized'
         net_amount = aiData.net_amount ?? amount
         confidence = aiData.confidence ?? 0
+        ai_insight = aiData.ai_insight ?? ''
+        is_expense = aiData.is_expense ?? true
       } else {
         console.error('[openrouter] fetch error:', await res.text())
       }
